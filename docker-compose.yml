@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: blog-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - blog-network
+
+  auth-service:
+    build: ./backend/auth-service
+    container_name: auth-service
+    ports:
+      - "8001:8001"
+    environment:
+      - MONGO_URL=mongodb://mongodb:27017
+      - SECRET_KEY=your-secret-key-change-in-production
+    depends_on:
+      - mongodb
+    networks:
+      - blog-network
+    command: uvicorn main:app --host 0.0.0.0 --port 8001 --reload
+
+  blog-service:
+    build: ./backend/blog-service
+    container_name: blog-service
+    ports:
+      - "8002:8002"
+    environment:
+      - MONGO_URL=mongodb://mongodb:27017
+      - AUTH_SERVICE_URL=http://auth-service:8001
+    depends_on:
+      - mongodb
+      - auth-service
+    networks:
+      - blog-network
+    command: uvicorn main:app --host 0.0.0.0 --port 8002 --reload
+
+  frontend:
+    build: ./frontend
+    container_name: blog-frontend
+    ports:
+      - "3000:3000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - auth-service
+      - blog-service
+    networks:
+      - blog-network
+    stdin_open: true
+    tty: true
+
+volumes:
+  mongodb_data:
+
+networks:
+  blog-network:
+    driver: bridge
