@@ -33,3 +33,7 @@ Thumbs.db
 
 # Docker
 *.log
+
+# Batch files
+start.bat
+*.bat
