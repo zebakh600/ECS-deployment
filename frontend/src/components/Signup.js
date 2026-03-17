@@ -14,8 +14,8 @@ function Signup({ setAuth }) {
     setError('');
     
     try {
-      const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:8001' : 'http://host.docker.internal:8001';
-      const response = await axios.post(`${apiUrl}/signup`, { name, email, password });
+      const apiUrl = 'https://ecs.zeba.click';      
+      const response = await axios.post(`${apiUrl}/api/auth/signup`, { name, email, password });
       localStorage.setItem('token', response.data.access_token);
       localStorage.setItem('userName', response.data.name);
       setAuth(true);
@@ -69,3 +69,6 @@ function Signup({ setAuth }) {
 }
 
 export default Signup;
+
+
+

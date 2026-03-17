@@ -9,6 +9,8 @@ function BlogEditor() {
   const navigate = useNavigate();
   const { id } = useParams();
 
+  const API_URL = 'https://ecs.zeba.click/api/blog';
+
   useEffect(() => {
     if (id) {
       fetchBlog();
@@ -19,8 +21,7 @@ function BlogEditor() {
   const fetchBlog = async () => {
     try {
       const token = localStorage.getItem('token');
-      const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:8002' : 'http://host.docker.internal:8002';
-      const response = await axios.get(`${apiUrl}/blogs/${id}`, {
+      const response = await axios.get(`${API_URL}/blogs/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setTitle(response.data.title);
@@ -32,7 +33,7 @@ function BlogEditor() {
 
   const handleSave = async (status) => {
     setError('');
-    
+
     if (!title.trim() || !content.trim()) {
       setError('Title and content are required');
       return;
@@ -41,18 +42,17 @@ function BlogEditor() {
     try {
       const token = localStorage.getItem('token');
       const blogData = { title, content, status };
-      const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:8002' : 'http://host.docker.internal:8002';
 
       if (id) {
-        await axios.put(`${apiUrl}/blogs/${id}`, blogData, {
+        await axios.put(`${API_URL}/blogs/${id}`, blogData, {
           headers: { Authorization: `Bearer ${token}` }
         });
       } else {
-        await axios.post(`${apiUrl}/blogs`, blogData, {
+        await axios.post(`${API_URL}/blogs`, blogData, {
           headers: { Authorization: `Bearer ${token}` }
         });
       }
-      
+
       navigate('/blogs');
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to save blog');
@@ -80,7 +80,7 @@ function BlogEditor() {
       <div className="editor-container">
         <h2>{id ? 'Edit Your Blog' : 'Create New Blog'}</h2>
         {error && <div className="error">{error}</div>}
-        
+
         <div className="form-group">
           <label>Blog Title</label>
           <input

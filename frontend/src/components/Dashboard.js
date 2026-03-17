@@ -7,6 +7,8 @@ function Dashboard() {
   const navigate = useNavigate();
   const userName = localStorage.getItem('userName');
 
+  const API_URL = 'https://ecs.zeba.click/api/blog';
+
   useEffect(() => {
     fetchStats();
   }, []);
@@ -14,8 +16,7 @@ function Dashboard() {
   const fetchStats = async () => {
     try {
       const token = localStorage.getItem('token');
-      const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:8002' : 'http://host.docker.internal:8002';
-      const response = await axios.get(`${apiUrl}/dashboard/stats`, {
+      const response = await axios.get(`${API_URL}/dashboard/stats`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setStats(response.data);

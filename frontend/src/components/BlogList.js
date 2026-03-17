@@ -6,6 +6,8 @@ function BlogList() {
   const [blogs, setBlogs] = useState([]);
   const navigate = useNavigate();
 
+  const API_URL = 'https://ecs.zeba.click/api/blog';
+
   useEffect(() => {
     fetchBlogs();
   }, []);
@@ -13,8 +15,7 @@ function BlogList() {
   const fetchBlogs = async () => {
     try {
       const token = localStorage.getItem('token');
-      const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:8002' : 'http://host.docker.internal:8002';
-      const response = await axios.get(`${apiUrl}/blogs`, {
+      const response = await axios.get(`${API_URL}/blogs`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setBlogs(response.data);
@@ -25,11 +26,10 @@ function BlogList() {
 
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this blog?')) return;
-    
+
     try {
       const token = localStorage.getItem('token');
-      const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:8002' : 'http://host.docker.internal:8002';
-      await axios.delete(`${apiUrl}/blogs/${id}`, {
+      await axios.delete(`${API_URL}/blogs/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchBlogs();
